@@ -40,6 +40,8 @@ public class RestauranteController {
     @PostMapping
     public ResponseEntity<?> salvar(@RequestBody Restaurante restaurante){
         try {
+            System.out.println(restaurante);
+
             Restaurante restauranteSalvo = cadastroRestauranteService.salvarRestaurante(restaurante);
             return ResponseEntity.status(HttpStatus.CREATED).body(restauranteSalvo);
         } catch (EntidadeNaoEncontradaException e){
