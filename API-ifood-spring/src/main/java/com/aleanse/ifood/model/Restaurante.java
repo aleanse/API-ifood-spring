@@ -2,6 +2,7 @@ package com.aleanse.ifood.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,18 +27,20 @@ public class Restaurante {
     @Column(nullable = false)
     private BigDecimal taxaFrete;
 
-    @ManyToOne
+
+    @JsonIgnoreProperties("hibernateLazyInitializer")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Cozinha cozinha;
 
     @JsonIgnore
     @CreationTimestamp
-    @Column(nullable = false,columnDefinition = "datetime")
+    @Column(nullable = false,columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime dataCadastro;
 
     @JsonIgnore
     @UpdateTimestamp
-    @Column(nullable = false,columnDefinition = "datetime")
+    @Column(nullable = false,columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime dataAtualizacao;
 
     @ManyToMany
@@ -51,11 +54,24 @@ public class Restaurante {
     private List<Produto> produto = new ArrayList<>();
 
     @Embedded
+    @JsonIgnore
     private Endereco endereco;
 
+    @PrePersist
+    protected void onCreate() {
+        dataCadastro = LocalDateTime.now(); // Define a data de cadastro
+        dataAtualizacao = LocalDateTime.now(); // Define a data de atualização
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        dataAtualizacao = LocalDateTime.now(); // Atualiza a data de atualização
+    }
     public Restaurante() {
     }
 
-
-
 }
+
+
+
+
