@@ -1,0 +1,23 @@
+create table pedido(
+	id serial primary key,
+	sub_total decimal not null,
+	taxa_frete decimal not null,
+	valor_total decimal not null,
+	data_criacao TIMESTAMP not null,
+	data_confirmacao TIMESTAMP,
+	data_cancelamento TIMESTAMP,
+	data_entrega TIMESTAMP,
+	cidade_id int,
+	cep varchar(15) not null,
+	numero varchar(100) not null,
+	complementento varchar(100),
+	bairro varchar(100) not null,
+	forma_pagamento_id int not null,
+	restaurante_id int not null,
+	cliente int not null,
+	FOREIGN KEY(cidade_id) REFERENCES cidade(id),
+	FOREIGN KEY(forma_pagamento_id) REFERENCES forma_pagamento(id),
+	FOREIGN KEY(restaurante_id) REFERENCES restaurante(id),
+	FOREIGN KEY(cliente) REFERENCES usuario(id),
+	status varchar(100) not null
+);
