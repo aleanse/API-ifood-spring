@@ -53,6 +53,7 @@ public class Restaurante {
     @OneToMany(mappedBy = "restaurante")
     private List<Produto> produto = new ArrayList<>();
 
+
     @Embedded
     @JsonIgnore
     private Endereco endereco;
@@ -63,12 +64,14 @@ public class Restaurante {
         dataAtualizacao = LocalDateTime.now(); // Define a data de atualização
     }
 
+
     @PreUpdate
     protected void onUpdate() {
         dataAtualizacao = LocalDateTime.now(); // Atualiza a data de atualização
     }
     public Restaurante() {
     }
+
 
 }
 
