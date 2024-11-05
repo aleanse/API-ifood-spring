@@ -35,7 +35,9 @@ public class CadastroCozinhaService {
                     String.format("Cozinha de código %d não pode ser removida, pois está em uso",id));
 
         }
-
-
+    }
+    public Cozinha buscarOuFalhar(Long id){
+        return cozinhaRepository.findById(id).orElseThrow(() -> new EntidadeNaoEncontradaException(
+                String.format("Não existe um cadastro de cozinha com código %d",id)));
     }
 }

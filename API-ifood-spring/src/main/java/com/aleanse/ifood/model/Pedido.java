@@ -3,6 +3,7 @@ package com.aleanse.ifood.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -10,7 +11,9 @@ import java.util.List;
 
 @Data
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Pedido {
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,7 +37,7 @@ public class Pedido {
     private LocalDateTime dataEntrega;
 
     @Embedded
-    private Endereco endereco;
+    private Endereco enderecoEntrega;
 
     @ManyToOne
     @JoinColumn(nullable = false)

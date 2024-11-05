@@ -32,7 +32,7 @@ public class RestauranteController {
         try {
             Restaurante restaurante = restauranteRepository.findById(id).get();
             return ResponseEntity.ok(restaurante);
-        }catch (Exception e){
+        }catch (EntidadeNaoEncontradaException e){
             System.out.println(e);
             return ResponseEntity.notFound().build();
         }
