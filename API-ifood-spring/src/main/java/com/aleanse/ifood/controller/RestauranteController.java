@@ -38,15 +38,10 @@ public class RestauranteController {
         }
     }
     @PostMapping
-    public ResponseEntity<?> salvar(@RequestBody Restaurante restaurante){
-        try {
-            System.out.println(restaurante);
+    public Restaurante salvar(@RequestBody Restaurante restaurante){
+        return cadastroRestauranteService.salvarRestaurante(restaurante);
 
-            Restaurante restauranteSalvo = cadastroRestauranteService.salvarRestaurante(restaurante);
-            return ResponseEntity.status(HttpStatus.CREATED).body(restauranteSalvo);
-        } catch (EntidadeNaoEncontradaException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+
     }
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Restaurante restaurante){

@@ -3,6 +3,7 @@ package com.aleanse.ifood.service;
 
 import com.aleanse.ifood.exception.EntidadeNaoEncontradaException;
 import com.aleanse.ifood.model.Cozinha;
+import com.aleanse.ifood.model.Estado;
 import com.aleanse.ifood.model.Restaurante;
 import com.aleanse.ifood.repository.CozinhaRepository;
 import com.aleanse.ifood.repository.RestauranteRepository;
@@ -23,18 +24,19 @@ public class CadastroRestauranteService {
     private RestauranteRepository restauranteRepository;
     @Autowired
     private CozinhaRepository cozinhaRepository;
+    @Autowired
+    private CadastroCozinhaService cadastroCozinha;
 
     public Restaurante salvarRestaurante(Restaurante restaurante){
-        Optional<Cozinha> cozinhaId = cozinhaRepository.findById(restaurante.getCozinha().getId());
+        Cozinha cozinha = cadastroCozinha.buscarOuFalhar(restaurante.getCozinha().getId());
 
-        if(cozinhaId.isEmpty()){
+        if (restaurante.getNome() == null || restaurante.getNome().isEmpty()) {
             throw new EntidadeNaoEncontradaException(
-                    String.format("Não existe um cadastro de cozinha com código %d",restaurante.getCozinha().getId()));
-        }else {
-            restaurante.setCozinha(cozinhaId.get());
+                    String.format("Nome do restaurante é obrigatório"));
+        } else {
+            restaurante.setCozinha(cozinha);
             return restauranteRepository.save(restaurante);
         }
-
 
 
     }
@@ -72,8 +74,12 @@ public class CadastroRestauranteService {
                 ReflectionUtils.setField(field, restauranteAtual.get(), novoValor);
             });
         }
-
         return restauranteRepository.save(restauranteAtual.get());
-
+    }
+    public Restaurante buscarOuFalha(Long id){
+        return restauranteRepository.findById(id).orElseThrow(() -> new EntidadeNaoEncontradaException(
+                String.format("Não existe um cadastro de restaurante com códido %d ",id)
+                )
+        );
     }
 }

@@ -13,6 +13,4 @@ public class EntidadeNaoEncontradaException extends RuntimeException {
         super(mensagem);
     }
 
-
-
 }

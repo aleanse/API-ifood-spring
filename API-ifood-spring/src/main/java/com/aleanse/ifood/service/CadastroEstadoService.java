@@ -1,7 +1,9 @@
 package com.aleanse.ifood.service;
 
 
+import com.aleanse.ifood.exception.EntidadeEmUsoException;
 import com.aleanse.ifood.exception.EntidadeNaoEncontradaException;
+import com.aleanse.ifood.exception.EstadoNaoEncontradoException;
 import com.aleanse.ifood.model.Cidade;
 import com.aleanse.ifood.model.Cozinha;
 import com.aleanse.ifood.model.Estado;
@@ -9,6 +11,8 @@ import com.aleanse.ifood.model.Restaurante;
 import com.aleanse.ifood.repository.CidadeRepository;
 import com.aleanse.ifood.repository.EstadoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,21 +45,23 @@ public class CadastroEstadoService {
         }
     }
 
-    public Estado deletar(Long id) {
-        Optional<Estado> estado = estadoRepository.findById(id);
-        List<Cidade> cidade = cidadeRepository.findByEstado_Id(id);
+    public void deletar(Long id) {
+        try {
+            estadoRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e){
+            throw new EstadoNaoEncontradoException(
+                    String.format("Não existe um cadastro de estado com código %d",id)
+            );
+        } catch (DataIntegrityViolationException e ){
+            throw new EntidadeNaoEncontradaException(
+                    String.format("não é possivel deletar pois estado de id %d esta em uso",id)
+            );
+        }
 
-        if (estado.isEmpty()){
-            throw new EntidadeNaoEncontradaException(
-                    String.format("Não existe um cadastro de restaurante com código %d",id));
-        }
-        else if (!cidade.isEmpty()){
-            throw new EntidadeNaoEncontradaException(
-                    String.format("Estado de código %d não pode ser removida, pois está em uso",id));
-        }
-        else {
-            estadoRepository.delete(estado.get());
-            return estado.get();
-        }
+    }
+
+    public Estado buscarOuFalhar(Long id) {
+        return estadoRepository.findById(id).orElseThrow(() -> new EstadoNaoEncontradoException(
+                String.format("Não existe um cadastro de estado com código %d",id)));
     }
 }

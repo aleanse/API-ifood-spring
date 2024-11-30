@@ -1,0 +1,1 @@
+ALTER TABLE restaurante RENAME COLUMN complementento TO complemento;

@@ -13,7 +13,7 @@ public class Cidade {
     @Column(nullable = false)
     private String nome;
 
-    @JoinColumn(nullable = false)
+    @JoinColumn(name="estado_id",nullable = false)
     @ManyToOne
     private Estado estado;
 

@@ -1,6 +1,7 @@
 package com.aleanse.ifood.controller;
 
 
+import com.aleanse.ifood.exception.EntidadeEmUsoException;
 import com.aleanse.ifood.exception.EntidadeNaoEncontradaException;
 import com.aleanse.ifood.model.Cozinha;
 import com.aleanse.ifood.model.Estado;
@@ -40,14 +41,9 @@ public class EstadoController {
         }
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Estado> listarEstado(@PathVariable Long id){
-        try {
-            Estado Estado = EstadoRepository.findById(id).get();
-            return ResponseEntity.ok(Estado);
-        }catch (Exception e){
-            System.out.println(e);
-            return ResponseEntity.notFound().build();
-        }
+    public Estado listarEstadoPorId(@PathVariable Long id){
+        return cadastroEstadoService.buscarOuFalhar(id);
+
     }
 
     @PutMapping("/{id}")
@@ -62,8 +58,8 @@ public class EstadoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletar(@PathVariable Long id){
         try {
-            Estado estado = cadastroEstadoService.deletar(id);
-            return ResponseEntity.status(HttpStatus.OK).body(estado);
+            cadastroEstadoService.deletar(id);
+            return ResponseEntity.ok("deletado com sucesso");
         } catch (EntidadeNaoEncontradaException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

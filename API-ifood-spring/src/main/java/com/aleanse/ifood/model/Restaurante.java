@@ -55,7 +55,6 @@ public class Restaurante {
 
 
     @Embedded
-    @JsonIgnore
     private Endereco endereco;
 
     @PrePersist
