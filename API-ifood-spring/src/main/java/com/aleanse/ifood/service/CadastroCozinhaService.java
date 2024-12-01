@@ -1,5 +1,6 @@
 package com.aleanse.ifood.service;
 
+import com.aleanse.ifood.exception.CozinhaNaoEncontradaException;
 import com.aleanse.ifood.exception.EntidadeEmUsoException;
 import com.aleanse.ifood.exception.EntidadeNaoEncontradaException;
 import com.aleanse.ifood.model.Cozinha;
@@ -26,7 +27,7 @@ public class CadastroCozinhaService {
             cozinhaRepository.delete(cozinha.get());
 
         }catch (NoSuchElementException e){
-            throw new EntidadeNaoEncontradaException(
+            throw new CozinhaNaoEncontradaException(
                     String.format("Não existe um cadastro de cozinha com código %d",id));
 
         }
@@ -37,7 +38,7 @@ public class CadastroCozinhaService {
         }
     }
     public Cozinha buscarOuFalhar(Long id){
-        return cozinhaRepository.findById(id).orElseThrow(() -> new EntidadeNaoEncontradaException(
+        return cozinhaRepository.findById(id).orElseThrow(() -> new CozinhaNaoEncontradaException(
                 String.format("Não existe um cadastro de cozinha com código %d",id)));
     }
 }

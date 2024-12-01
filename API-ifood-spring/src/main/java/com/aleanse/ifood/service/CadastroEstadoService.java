@@ -26,7 +26,7 @@ public class CadastroEstadoService {
     private CidadeRepository cidadeRepository;
     public Estado salvarEstado(Estado estado) {
         if (estado.getNome() == null || estado.getNome().isEmpty()){
-            throw new EntidadeNaoEncontradaException("Nome do estado é obrigatório");
+            throw new EstadoNaoEncontradoException("Nome do estado é obrigatório");
         }else {
             return estadoRepository.save(estado);
         }
@@ -35,10 +35,10 @@ public class CadastroEstadoService {
     public Estado atualizarEstado(Long id, Estado estado) {
         Optional<Estado> estadoAtual = estadoRepository.findById(id);
         if (estadoAtual.isEmpty()){
-            throw new EntidadeNaoEncontradaException(
-                    String.format("Não existe um cadastro de restaurante com código %d",id));
+            throw new EstadoNaoEncontradoException(
+                    String.format("Não existe um cadastro de cidade com código %d",id));
         } else if (estado.getNome() == null || estado.getNome().isEmpty()){
-            throw new EntidadeNaoEncontradaException("Nome do estado é obrigatório");
+            throw new EstadoNaoEncontradoException("Nome do estado é obrigatório");
         } else {
             estadoAtual.get().setNome(estado.getNome());
             return estadoRepository.save(estadoAtual.get());
@@ -53,7 +53,7 @@ public class CadastroEstadoService {
                     String.format("Não existe um cadastro de estado com código %d",id)
             );
         } catch (DataIntegrityViolationException e ){
-            throw new EntidadeNaoEncontradaException(
+            throw new EntidadeEmUsoException(
                     String.format("não é possivel deletar pois estado de id %d esta em uso",id)
             );
         }

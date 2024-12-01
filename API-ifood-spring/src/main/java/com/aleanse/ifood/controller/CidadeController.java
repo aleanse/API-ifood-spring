@@ -58,13 +58,10 @@ public class CidadeController {
         }
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletar(@PathVariable Long id){
-        try {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletar(@PathVariable Long id){
             cadastroCidadeService.deletar(id);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (EntidadeNaoEncontradaException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+
     }
 
 

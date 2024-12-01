@@ -2,6 +2,7 @@ package com.aleanse.ifood.service;
 
 
 import com.aleanse.ifood.exception.EntidadeNaoEncontradaException;
+import com.aleanse.ifood.exception.RestauranteNaoEncontradoException;
 import com.aleanse.ifood.model.Cozinha;
 import com.aleanse.ifood.model.Estado;
 import com.aleanse.ifood.model.Restaurante;
@@ -31,7 +32,7 @@ public class CadastroRestauranteService {
         Cozinha cozinha = cadastroCozinha.buscarOuFalhar(restaurante.getCozinha().getId());
 
         if (restaurante.getNome() == null || restaurante.getNome().isEmpty()) {
-            throw new EntidadeNaoEncontradaException(
+            throw new RestauranteNaoEncontradoException(
                     String.format("Nome do restaurante é obrigatório"));
         } else {
             restaurante.setCozinha(cozinha);
@@ -46,7 +47,7 @@ public class CadastroRestauranteService {
 
         Optional<Cozinha> cozinhaId = cozinhaRepository.findById(restaurante.getCozinha().getId());
         if (restauranteAtual.isEmpty()){
-            throw new EntidadeNaoEncontradaException(
+            throw new RestauranteNaoEncontradoException(
                     String.format("Não existe um cadastro de restaurante com códido %d ",id));
         }
         restauranteAtual.get().setNome(restaurante.getNome());
@@ -64,7 +65,7 @@ public class CadastroRestauranteService {
         Restaurante restaurante = objectMapper.convertValue(campos, Restaurante.class);
 
         if (restauranteAtual.isEmpty()){
-            throw new EntidadeNaoEncontradaException(
+            throw new RestauranteNaoEncontradoException(
                     String.format("Não existe um cadastro de restaurante com códido %d ",id));
         }else{
             campos.forEach((chave, valor) -> {
@@ -77,7 +78,7 @@ public class CadastroRestauranteService {
         return restauranteRepository.save(restauranteAtual.get());
     }
     public Restaurante buscarOuFalha(Long id){
-        return restauranteRepository.findById(id).orElseThrow(() -> new EntidadeNaoEncontradaException(
+        return restauranteRepository.findById(id).orElseThrow(() -> new RestauranteNaoEncontradoException(
                 String.format("Não existe um cadastro de restaurante com códido %d ",id)
                 )
         );

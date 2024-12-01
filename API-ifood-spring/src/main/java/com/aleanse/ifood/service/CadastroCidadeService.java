@@ -1,5 +1,6 @@
 package com.aleanse.ifood.service;
 
+import com.aleanse.ifood.exception.CidadeNaoEncontradaException;
 import com.aleanse.ifood.exception.EntidadeEmUsoException;
 import com.aleanse.ifood.exception.EntidadeNaoEncontradaException;
 import com.aleanse.ifood.exception.EstadoNaoEncontradoException;
@@ -38,11 +39,11 @@ public class CadastroCidadeService {
         Cidade cidadeAtual = buscarOuFalhar(id);
         Optional<Estado> estado = estadoRepository.findById(cidade.getEstado().getId());
         if (cidade.getNome() == null || cidade.getNome().isEmpty()) {
-            throw new EntidadeNaoEncontradaException(
+            throw new CidadeNaoEncontradaException(
                     String.format("Nome da cidade é obrigatório"));
         }
          else if (estado.isEmpty() || estado.get().getId() == null) {
-            throw new EntidadeNaoEncontradaException(
+            throw new EstadoNaoEncontradoException(
                     String.format("Não existe um cadastro de estado com código %d", cidade.getEstado().getId()));
         } else {
             cidadeAtual.setNome(cidade.getNome());
@@ -54,15 +55,14 @@ public class CadastroCidadeService {
         try {
             cidadeRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e){
-            throw new EntidadeNaoEncontradaException(
+            throw new CidadeNaoEncontradaException(
                     String.format("Não existe um cadastro de cidade com código %d",id)
             );
         } catch (DataIntegrityViolationException e ){
-            throw new EntidadeNaoEncontradaException(
+            throw new EntidadeEmUsoException(
                     String.format("não é possivel deletar pois cidade de id %d esta em uso",id)
             );
         }
-
 
     }
     public Cidade buscarOuFalhar(Long id) {
