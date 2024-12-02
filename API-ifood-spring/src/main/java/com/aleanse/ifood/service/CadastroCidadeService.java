@@ -53,12 +53,9 @@ public class CadastroCidadeService {
     }
     public void deletar(Long id) {
         try {
-            cidadeRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e){
-            throw new CidadeNaoEncontradaException(
-                    String.format("Não existe um cadastro de cidade com código %d",id)
-            );
-        } catch (DataIntegrityViolationException e ){
+            Cidade cidade = buscarOuFalhar(id);
+            cidadeRepository.delete(cidade);
+        } catch (DataIntegrityViolationException f ){
             throw new EntidadeEmUsoException(
                     String.format("não é possivel deletar pois cidade de id %d esta em uso",id)
             );
@@ -66,7 +63,7 @@ public class CadastroCidadeService {
 
     }
     public Cidade buscarOuFalhar(Long id) {
-        return cidadeRepository.findById(id).orElseThrow(() -> new EstadoNaoEncontradoException(
+        return cidadeRepository.findById(id).orElseThrow(() -> new CidadeNaoEncontradaException(
                 String.format("Não existe um cadastro de cidade com código %d",id)));
     }
 
