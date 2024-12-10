@@ -47,11 +47,8 @@ public class CadastroEstadoService {
 
     public void deletar(Long id) {
         try {
-            estadoRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e){
-            throw new EstadoNaoEncontradoException(
-                    String.format("Não existe um cadastro de estado com código %d",id)
-            );
+            Estado estado = buscarOuFalhar(id);
+            estadoRepository.delete(estado);
         } catch (DataIntegrityViolationException e ){
             throw new EntidadeEmUsoException(
                     String.format("não é possivel deletar pois estado de id %d esta em uso",id)

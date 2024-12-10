@@ -56,12 +56,8 @@ public class EstadoController {
         }
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletar(@PathVariable Long id){
-        try {
-            cadastroEstadoService.deletar(id);
-            return ResponseEntity.ok("deletado com sucesso");
-        } catch (EntidadeNaoEncontradaException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public void deletar(@PathVariable Long id) {
+        cadastroEstadoService.deletar(id);
     }
+
 }

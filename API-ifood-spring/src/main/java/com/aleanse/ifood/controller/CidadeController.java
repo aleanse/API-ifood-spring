@@ -1,22 +1,15 @@
 package com.aleanse.ifood.controller;
 
-import com.aleanse.ifood.exception.EntidadeNaoEncontradaException;
 import com.aleanse.ifood.exception.EstadoNaoEncontradoException;
-import com.aleanse.ifood.exceptionhandler.Problema;
 import com.aleanse.ifood.model.Cidade;
-import com.aleanse.ifood.model.Estado;
 import com.aleanse.ifood.repository.CidadeRepository;
-import com.aleanse.ifood.repository.EstadoRepository;
 import com.aleanse.ifood.service.CadastroCidadeService;
-import com.aleanse.ifood.service.CadastroEstadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/cidades")
@@ -62,7 +55,8 @@ public class CidadeController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletar(@PathVariable Long id){
-            cadastroCidadeService.deletar(id);
+
+        cadastroCidadeService.deletar(id);
     }
 
 
