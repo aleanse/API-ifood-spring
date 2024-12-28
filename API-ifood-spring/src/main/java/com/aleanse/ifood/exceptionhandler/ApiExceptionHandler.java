@@ -2,8 +2,12 @@ package com.aleanse.ifood.exceptionhandler;
 
 import com.aleanse.ifood.exception.EntidadeEmUsoException;
 import com.aleanse.ifood.exception.EntidadeNaoEncontradaException;
+import com.fasterxml.jackson.databind.exc.IgnoredPropertyException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -14,25 +18,31 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+
 import java.util.stream.Collectors;
 
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+    private static final Logger logger = LoggerFactory.getLogger(ApiExceptionHandler.class);
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+                                                                  HttpHeaders headers, HttpStatusCode status,
+                                                                  WebRequest request) {
+        logger.error("Erro ao processar a mensagem HTTP: {}", ExceptionUtils.getStackTrace(ex));
 
         Throwable rootCause = ExceptionUtils.getRootCause(ex);
         if (rootCause instanceof InvalidFormatException){
             return handleInvalidFormatException((InvalidFormatException) rootCause,headers,status,request);
         }
+
         String detail = "o corpo da requisição está invalido, Verifique erro de sintaxe.";
         Problem problema = Problem.builder()
                 .title("entidade não encontrada")
                 .status(status.value())
                 .detail(detail).build();
-        return super.handleExceptionInternal(ex, problema , headers, status, request);
+
+        return handleExceptionInternal(ex, problema , headers, status, request);
     }
     private ResponseEntity<Object> handleInvalidFormatException(InvalidFormatException ex,
                                             HttpHeaders headers, HttpStatusCode status,
@@ -48,8 +58,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .title("entidade não encontrada")
                 .status(status.value())
                 .detail(detail).build();
-
-        return super.handleExceptionInternal(ex,problem, headers,status,request);
+        return handleExceptionInternal(ex,problem, headers,status,request);
 
     }
 
@@ -64,7 +73,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .title("entidade não encontrada")
                 .status(status.value())
                 .detail(e.getMessage()).build();
-
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problema);
 
@@ -81,12 +89,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(status).body(problema);
 
     }
-
-
-
-
     @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
+                                                             HttpHeaders headers,
+                                                             HttpStatusCode statusCode,
+                                                             WebRequest request) {
          body = Problem.builder()
                 .title((String) body)
                 .status(statusCode.value()).build();

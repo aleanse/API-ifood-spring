@@ -43,20 +43,17 @@ public class CadastroRestauranteService {
     }
 
     public Restaurante atualizarRestaurante(Long id, Restaurante restaurante) {
-        Optional<Restaurante> restauranteAtual = restauranteRepository.findById(id);
-
-        Optional<Cozinha> cozinhaId = cozinhaRepository.findById(restaurante.getCozinha().getId());
-        if (restauranteAtual.isEmpty()){
+        Restaurante restauranteAtual = buscarOuFalha(id);
+        Cozinha cozinha = cadastroCozinha.buscarOuFalhar(restaurante.getCozinha().getId());
+        if (restaurante.getNome() == null || restaurante.getNome().isEmpty() ){
             throw new RestauranteNaoEncontradoException(
-                    String.format("Não existe um cadastro de restaurante com códido %d ",id));
+                    String.format("nome do restaurante é obrigatório")
+            );
         }
-        restauranteAtual.get().setNome(restaurante.getNome());
-        restauranteAtual.get().setCozinha(cozinhaId.get());
-        restauranteAtual.get().setTaxaFrete(restaurante.getTaxaFrete());
-
-
-
-        return restauranteRepository.save(restauranteAtual.get());
+        restauranteAtual.setNome(restaurante.getNome());
+        restauranteAtual.setCozinha(cozinha);
+        restauranteAtual.setTaxaFrete(restaurante.getTaxaFrete());
+        return restauranteRepository.save(restauranteAtual);
     }
 
     public Restaurante atualizarParcial(Long id, Map<String,Object> campos) {

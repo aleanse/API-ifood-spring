@@ -45,12 +45,10 @@ public class RestauranteController {
     }
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Restaurante restaurante){
-        try {
+
             Restaurante restauranteAtualizado = cadastroRestauranteService.atualizarRestaurante(id,restaurante);
             return ResponseEntity.ok(restauranteAtualizado);
-        } catch (EntidadeNaoEncontradaException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+            //return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
     @PatchMapping("/{id}")
     public ResponseEntity<?> atualizarParcial(@PathVariable Long id, @RequestBody Map<String, Object> campos){
