@@ -12,4 +12,5 @@ public enum ProblemType {
     ProblemType(String title){
         this.title = title;
     }
+
 }

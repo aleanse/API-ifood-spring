@@ -29,10 +29,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
                                                                   HttpHeaders headers, HttpStatusCode status,
                                                                   WebRequest request) {
-        logger.error("Erro ao processar a mensagem HTTP: {}", ExceptionUtils.getStackTrace(ex));
+
 
         Throwable rootCause = ExceptionUtils.getRootCause(ex);
         if (rootCause instanceof InvalidFormatException){
+            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
             return handleInvalidFormatException((InvalidFormatException) rootCause,headers,status,request);
         }
 
@@ -41,19 +42,56 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .title("entidade não encontrada")
                 .status(status.value())
                 .detail(detail).build();
-
-        return handleExceptionInternal(ex, problema , headers, status, request);
+        return super.handleExceptionInternal(ex, problema , headers, status, request);
     }
     private ResponseEntity<Object> handleInvalidFormatException(InvalidFormatException ex,
-                                            HttpHeaders headers, HttpStatusCode status,
-                                            WebRequest request) {
+                                                                HttpHeaders headers, HttpStatusCode status,
+                                                                WebRequest request) {
         ex.getPath().forEach(ref -> System.out.println(ref.getFieldName()));
         String path = ex.getPath().stream()
                 .map(ref -> ref.getFieldName())
                 .collect(Collectors.joining("."));
         String detail = String.format("a propriedade %s recebeu o valor %s," +
-                "que é de um tipo invalido. Corriga e informe um valor compátivel com o tipo %s.",
+                        "que é de um tipo invalido. Corriga e informe um valor compátivel com o tipo %s.",
                 path,ex.getValue(),ex.getTargetType().getSimpleName());
+        Problem problem = Problem.builder()
+                .title("entidade não encontrada")
+                .status(status.value())
+                .detail(detail).build();
+        return handleExceptionInternal(ex,problem, headers,status,request);
+
+    }
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
+                                                             HttpHeaders headers,
+                                                             HttpStatusCode statusCode,
+                                                             WebRequest request) {
+
+        if (body == null){
+            body = Problem.builder()
+                    .title(statusCode.toString())
+                    .status(statusCode.value())
+                    .build();
+        } else if (body instanceof String) {
+            body = Problem.builder()
+                    .title((String) body)
+                    .status(statusCode.value())
+                    .build();
+        }
+
+        return super.handleExceptionInternal(ex, body, headers, statusCode, request);
+    }
+
+    private ResponseEntity<Object> handlePropertyBindingException(PropertyBindingException ex,
+                                                                HttpHeaders headers, HttpStatusCode status,
+                                                                WebRequest request) {
+        ex.getPath().forEach(ref -> System.out.println(ref.getFieldName()));
+        String path = ex.getPath().stream()
+                .map(ref -> ref.getFieldName())
+                .collect(Collectors.joining("."));
+        String detail = String.format("a propriedade %s recebeu o valor %s," +
+                        "que é de um tipo invalido. Corriga e informe um valor compátivel com o tipo %s.",
+                path,ex,ex.getTargetType().getSimpleName());
         Problem problem = Problem.builder()
                 .title("entidade não encontrada")
                 .status(status.value())
@@ -89,16 +127,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(status).body(problema);
 
     }
-    @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
-                                                             HttpHeaders headers,
-                                                             HttpStatusCode statusCode,
-                                                             WebRequest request) {
-         body = Problem.builder()
-                .title((String) body)
-                .status(statusCode.value()).build();
-        return super.handleExceptionInternal(ex, body, headers, statusCode, request);
-    }
+
 
 
 }
